@@ -47,7 +47,7 @@ def main():
     writer.writeheader()
 
     # sweep over the following parameters
-    for traffic in ['uniform', 'neighbor', 'tornado']:
+    for traffic in ['uniform', 'neighbor', 'allreduce']:
         for k in [4, 8]:
             for packet_size in [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]:
                 for rate in [x/100 for x in range(5, 100, 5)]:

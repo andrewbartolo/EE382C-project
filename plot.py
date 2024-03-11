@@ -7,7 +7,7 @@ import os
 import sys
 
 CSV_FILE = './data.csv'
-TRAFFIC_TYPE = 'neighbor'
+TRAFFIC_PATTERN = 'uniform'
 
 # returns a list of (x, y) tuples where x: injection rate, and y: latency
 def get_points(key, traffic, k, packet_size):
@@ -23,7 +23,7 @@ def get_points(key, traffic, k, packet_size):
                 not math.isnan(float(row[key]))
             )]
 
-# make some plots for TRAFFIC_TYPE traffic
+# make some plots for TRAFFIC_PATTERN traffic
 # NOTE: easier to define packet_sizes in terms of explicit multipliers
 multipliers = [1, 8, 64, 512]
 
@@ -34,7 +34,7 @@ for k in [4, 8]:
     # (lower packet sizes correspond to *higher* channel bandwidth)
     for multiplier in multipliers:
         packet_size = multipliers[-1] / multiplier
-        data[k][multiplier] = get_points('avg_lat', TRAFFIC_TYPE, k, packet_size)
+        data[k][multiplier] = get_points('avg_lat', TRAFFIC_PATTERN, k, packet_size)
 
 
 fig, ax = plt.subplots()
@@ -58,8 +58,8 @@ fig.tight_layout()
 output_dir = 'render'
 os.makedirs(output_dir, exist_ok=True)
 
-plt.savefig(f'{output_dir}/latency.pdf')
-plt.savefig(f'{output_dir}/latency.png', dpi=600)
-plt.savefig(f'{output_dir}/latency.svg', transparent=True)
+plt.savefig(f'{output_dir}/latency-{TRAFFIC_PATTERN}.pdf')
+plt.savefig(f'{output_dir}/latency-{TRAFFIC_PATTERN}.png', dpi=600)
+plt.savefig(f'{output_dir}/latency-{TRAFFIC_PATTERN}.svg', transparent=True)
 
 plt.close()

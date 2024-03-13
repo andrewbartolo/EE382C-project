@@ -45,11 +45,13 @@ for k in [4, 8]:
         print(data)
         points = data[k][multiplier]
         x, y = list(zip(*points))
-        plt.plot(x, y, line_type, label=f'k={k}; {multiplier}X channel BW')
+        plt.plot(x, y, line_type, label=f'k={k}; {multiplier}X BW')
 
-ax.set_xlabel("Flit injection rate")
-ax.set_ylabel("Average packet latency (cycles)")
-ax.legend(ncol=2)
+ax.set_xlabel("Flit injection rate", fontsize=13)
+ax.set_ylabel("Average packet latency (cycles)", fontsize=13)
+ax.tick_params(axis='x', labelsize=13)
+ax.tick_params(axis='y', labelsize=13)
+ax.legend(ncol=2, fontsize=13)
 
 # reduce margins
 fig.tight_layout()

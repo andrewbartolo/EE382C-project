@@ -8,6 +8,10 @@ import sys
 
 CSV_FILE = './data.csv'
 TRAFFIC_PATTERN = 'uniform'
+LAT_OR_HOPS = 0    # choose one of these to plot. lat: 0; hops: 1
+PROPERTY = ['avg_lat', 'avg_hops'][LAT_OR_HOPS]
+Y_LABEL = ['Average packet latency (cycles)', 'Average hop count'][LAT_OR_HOPS]
+X_LABEL = 'Flit injection rate'
 
 # returns a list of (x, y) tuples where x: injection rate, and y: latency
 def get_points(key, traffic, k, packet_size):
@@ -34,7 +38,7 @@ for k in [4, 8]:
     # (lower packet sizes correspond to *higher* channel bandwidth)
     for multiplier in multipliers:
         packet_size = multipliers[-1] / multiplier
-        data[k][multiplier] = get_points('avg_lat', TRAFFIC_PATTERN, k, packet_size)
+        data[k][multiplier] = get_points(PROPERTY, TRAFFIC_PATTERN, k, packet_size)
 
 
 fig, ax = plt.subplots()
@@ -47,8 +51,8 @@ for k in [4, 8]:
         x, y = list(zip(*points))
         plt.plot(x, y, line_type, label=f'k={k}; {multiplier}X BW')
 
-ax.set_xlabel("Flit injection rate", fontsize=13)
-ax.set_ylabel("Average packet latency (cycles)", fontsize=13)
+ax.set_xlabel(X_LABEL, fontsize=13)
+ax.set_ylabel(Y_LABEL, fontsize=13)
 ax.tick_params(axis='x', labelsize=13)
 ax.tick_params(axis='y', labelsize=13)
 ax.legend(ncol=2, fontsize=13)
@@ -60,8 +64,8 @@ fig.tight_layout()
 output_dir = 'render'
 os.makedirs(output_dir, exist_ok=True)
 
-plt.savefig(f'{output_dir}/latency-{TRAFFIC_PATTERN}.pdf')
-plt.savefig(f'{output_dir}/latency-{TRAFFIC_PATTERN}.png', dpi=600)
-plt.savefig(f'{output_dir}/latency-{TRAFFIC_PATTERN}.svg', transparent=True)
+plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}.pdf')
+plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}.png', dpi=600)
+plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}.svg', transparent=True)
 
 plt.close()

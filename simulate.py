@@ -9,8 +9,8 @@ BASE_CFG = './base.cfg'
 OUT_DIR = './sim-out'
 N_WORKER_THREADS = 24
 
-def run_cmd(booksim_exe, base_cfg, out_dir, k, packet_size, traffic, rate):
-    prefix = Path(out_dir, f'K{k}-S{packet_size}-T{traffic}-R{int(rate*100):03d}')
+def run_cmd(booksim_exe, base_cfg, out_dir, k, packet_size, traffic, routing, rate):
+    prefix = Path(out_dir, f'K{k}-S{packet_size}-T{traffic}-R{routing}-I{int(rate*100):03d}')
     print(f"launching {prefix}...")
 
     m_path = prefix.with_suffix('.m')
@@ -21,6 +21,7 @@ def run_cmd(booksim_exe, base_cfg, out_dir, k, packet_size, traffic, rate):
                           f'k={k}',
                           f'packet_size={packet_size}',
                           f'traffic={traffic}',
+                          f'routing_function={routing}',
                           f'injection_rate={rate}',
                           f'stats_out={m_path}'],
                           stdout=subprocess.PIPE, text=True)
@@ -39,12 +40,13 @@ def main():
     for k in [4, 8]:
         for packet_size in [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]:
             # tornado exhibited some weird results; stick with 'uniform' and 'neighbor' for now
-            for traffic in ['uniform', 'neighbor', 'allreduce']:
-                for rate in [x/100 for x in range(5, 100, 5)]:
-                    # NOTE: all submitted threads will implicitly be joined before the program exits
-                    # (https://docs.python.org/3/library/concurrent.futures.html#threadpoolexecutor)
-                    tp.submit(run_cmd, BOOKSIM_EXE, BASE_CFG, OUT_DIR, k, packet_size, traffic,
-                              rate)
+            for traffic in ['allreduce', 'neighbor', 'uniform']:
+                for routing in ['dor', 'min_adapt', 'xy_yx']:
+                    for rate in [x/100 for x in range(5, 100, 5)]:
+                        # NOTE: all submitted threads will implicitly be joined before the program exits
+                        # (https://docs.python.org/3/library/concurrent.futures.html#threadpoolexecutor)
+                        tp.submit(run_cmd, BOOKSIM_EXE, BASE_CFG, OUT_DIR, k, packet_size, traffic,
+                                  routing, rate)
 
 
 if __name__ == '__main__':

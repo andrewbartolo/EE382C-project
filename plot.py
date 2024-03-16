@@ -8,19 +8,21 @@ import sys
 
 CSV_FILE = './data.csv'
 TRAFFIC_PATTERN = 'uniform'
+ROUTING = 'dor'
 LAT_OR_HOPS = 0    # choose one of these to plot. lat: 0; hops: 1
 PROPERTY = ['avg_lat', 'avg_hops'][LAT_OR_HOPS]
 Y_LABEL = ['Average packet latency (cycles)', 'Average hop count'][LAT_OR_HOPS]
 X_LABEL = 'Flit injection rate'
 
 # returns a list of (x, y) tuples where x: injection rate, and y: latency
-def get_points(key, traffic, k, packet_size):
+def get_points(key, traffic, routing, k, packet_size):
     # do a full separate pass through the file for each set of points
     with open(CSV_FILE, 'r') as f:
         reader = csv.DictReader(f)
         return [(float(row['rate']), float(row[key])) for row in reader \
             if (
                 row['traffic'] == traffic and \
+                row['routing'] == routing and \
                 int(row['k']) == k and \
                 int(row['packet_size']) == packet_size and \
                 # NaN check
@@ -38,7 +40,7 @@ for k in [4, 8]:
     # (lower packet sizes correspond to *higher* channel bandwidth)
     for multiplier in multipliers:
         packet_size = multipliers[-1] / multiplier
-        data[k][multiplier] = get_points(PROPERTY, TRAFFIC_PATTERN, k, packet_size)
+        data[k][multiplier] = get_points(PROPERTY, TRAFFIC_PATTERN, ROUTING, k, packet_size)
 
 
 fig, ax = plt.subplots()
@@ -64,8 +66,8 @@ fig.tight_layout()
 output_dir = 'render'
 os.makedirs(output_dir, exist_ok=True)
 
-plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}.pdf')
-plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}.png', dpi=600)
-plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}.svg', transparent=True)
+plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}-{ROUTING}.pdf')
+plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}-{ROUTING}.png', dpi=600)
+plt.savefig(f'{output_dir}/{PROPERTY}-{TRAFFIC_PATTERN}-{ROUTING}.svg', transparent=True)
 
 plt.close()

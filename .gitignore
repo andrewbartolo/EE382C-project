@@ -1,6 +1,10 @@
 booksim
 base.m
 booksim2/
-render/
+render/*.pdf
+render/*.svg
+render/*allreduce*
+render/*neighbor*
+render/avg_hops*
 sim-out/
 venv/
